@@ -333,8 +333,8 @@ class BaseWebsite:
         """
         fetch bangumi info when updating
 
-        :param bangumi_id: banugmi_id, or bangumi['keyword']
+        :param bangumi_id: bangumi_id, or bangumi['keyword']
         :type bangumi_id: str
         :rtype: WebsiteBangumi
         """
-        raise NotImplementedError
+        return WebsiteBangumi(keyword=bangumi_id)
