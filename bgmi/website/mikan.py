@@ -3,7 +3,6 @@ import time
 from collections import defaultdict
 from typing import List
 
-import attr
 import bs4
 import requests
 from bs4 import BeautifulSoup
@@ -274,7 +273,7 @@ class Mikanani(BaseWebsite):
         :rtype: list[dict]
         """
         r = get_text(server_root + "Home/Bangumi/{}".format(bangumi_id))
-        return [attr.asdict(x) for x in parse_episodes(r, subtitle_list)]
+        return parse_episodes(r, subtitle_list)
 
     def fetch_bangumi_calendar(self) -> List[WebsiteBangumi]:
         bangumi_list = []
