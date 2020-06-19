@@ -108,25 +108,13 @@ class BaseWebsite:
         return weekly_list
 
     def bangumi_calendar(
-        self,
-        force_update: bool = False,
-        save: bool = True,
-        cover: Optional[List[str]] = None,
+        self, save: bool = True, cover: Optional[List[str]] = None,
     ) -> Dict[str, List[WebsiteBangumi]]:
         """
 
-        :param force_update:
         :param save: set true to enable save bangumi data to database
         :param cover: list of cover url (of scripts) want to download
         """
-        if force_update and not test_connection():
-            force_update = False
-            print_warning("Network is unreachable")
-
-        if force_update:
-            print_info("Fetching bangumi info ...")
-            self.fetch(save=save)
-
         weekly_list = self.fetch(save=save)  # type:  Dict[str, List[WebsiteBangumi]]
 
         if cover is not None:

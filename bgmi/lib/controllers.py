@@ -210,7 +210,10 @@ def cal(
     if not weekly_list:
         print_warning("Warning: no bangumi schedule, fetching ...")
         force_update = True
-    website.bangumi_calendar(force_update=force_update, save=save, cover=cover)
+
+    if force_update:
+        print_info("Fetching bangumi info ...")
+        website.bangumi_calendar(save=save, cover=cover)
 
     weekly_list = Bangumi.get_updating_bangumi()
 
