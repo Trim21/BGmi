@@ -113,7 +113,7 @@ def delete_wrapper(ret: Any) -> None:
     else:
         for bangumi_name in ret.name:
             result = delete(name=bangumi_name)
-            globals()["print_{}".format(result["status"])](result["message"])
+            result.print()
 
 
 def add_wrapper(ret: Any) -> None:

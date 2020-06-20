@@ -192,9 +192,7 @@ def filter_(
     return result
 
 
-def delete(
-    name: str = "", clear_all: bool = False, batch: bool = False
-) -> ControllerResult:
+def delete(name: str = "", clear_all: bool = False, batch: bool = False) -> Result:
     """
     :param name:
     :param clear_all:
@@ -202,12 +200,12 @@ def delete(
     """
     # action delete
     # just delete subscribed bangumi or clear all the subscribed bangumi
-    result = {}
+    result = Result()
     logger.debug("delete {}".format(name))
     if clear_all:
         if Followed.delete_followed(batch=batch):
-            result["status"] = "warning"
-            result["message"] = "all subscriptions have been deleted"
+            result.status = "warning"
+            result.message = "all subscriptions have been deleted"
         else:
             print_error("user canceled")
     elif name:
@@ -215,14 +213,14 @@ def delete(
             followed = Followed.get(bangumi_name=name)
             followed.status = STATUS_DELETED
             followed.save()
-            result["status"] = "warning"
-            result["message"] = "Bangumi {} has been deleted".format(name)
+            result.status = "warning"
+            result.message = "Bangumi {} has been deleted".format(name)
         except Followed.DoesNotExist:
-            result["status"] = "error"
-            result["message"] = "Bangumi %s does not exist" % name
+            result.status = "error"
+            result.message = "Bangumi %s does not exist" % name
     else:
-        result["status"] = "warning"
-        result["message"] = "Nothing has been done."
+        result.status = "warning"
+        result.message = "Nothing has been done."
     logger.debug(result)
     return result
 

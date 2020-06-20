@@ -52,7 +52,7 @@ def wrap_attr(f: Callable[..., Result]) -> Callable[..., dict]:
 
 API_MAP_POST = {
     ACTION_ADD: wrap_attr(add),
-    ACTION_DELETE: delete,
+    ACTION_DELETE: wrap_attr(delete),
     ACTION_SEARCH: search,
     ACTION_CONFIG: config,
     ACTION_DOWNLOAD: download_prepare,

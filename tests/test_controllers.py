@@ -63,7 +63,7 @@ class ControllersTest(unittest.TestCase):
         r = add(self.bangumi_name_1, 0)
         assert r.status == "warning", r["message"]
         r = delete(self.bangumi_name_1)
-        assert r["status"] == "warning", r["message"]
+        assert r.status == "warning", r.message
 
     def test_c_mark(self):
         add(self.bangumi_name_1, 0)
@@ -77,15 +77,15 @@ class ControllersTest(unittest.TestCase):
 
     def test_d_delete(self):
         r = delete()
-        self.assertEqual(r["status"], "warning", r["message"])
+        self.assertEqual(r.status, "warning", r.message)
         r = delete(self.bangumi_name_1)
-        self.assertEqual(r["status"], "warning", r["message"])
+        self.assertEqual(r.status, "warning", r.message)
         r = delete(self.bangumi_name_1)
-        self.assertEqual(r["status"], "warning", r["message"])
+        self.assertEqual(r.status, "warning", r.message)
         r = delete(self.bangumi_name_2)
-        self.assertEqual(r["status"], "error", r["message"])
+        self.assertEqual(r.status, "error", r.message)
         r = delete(clear_all=True, batch=True)
-        self.assertEqual(r["status"], "warning", r["message"])
+        self.assertEqual(r.status, "warning", r.message)
 
     def test_e_search(self):
         r = search(self.bangumi_name_1, dupe=False)
