@@ -22,6 +22,7 @@ from bgmi.lib.constants import (
     ACTION_SEARCH,
 )
 from bgmi.lib.controllers import (
+    Result,
     add,
     cal,
     config,
@@ -42,7 +43,7 @@ def auth_(token: str = "") -> Dict[str, str]:
     return {"status": "success" if token == ADMIN_TOKEN else "error"}
 
 
-def wrap_attr(f: Callable) -> Callable:
+def wrap_attr(f: Callable[..., Result]) -> Callable[..., dict]:
     def wrapped(*args: Any, **kwargs: Any) -> dict:
         return attr.asdict(f(*args, **kwargs))
 

@@ -1,7 +1,7 @@
 import os
 import time
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 import peewee
 from peewee import FixedCharField, IntegerField, TextField
@@ -35,10 +35,16 @@ db = peewee.SqliteDatabase(bgmi.config.DB_PATH)
 if os.environ.get("DEV"):
     print("using", bgmi.config.DB_PATH)
 
+_Cls = TypeVar("_Cls", bound=peewee.Model)
+
 
 class NeoDB(peewee.Model):
     class Meta:
         database = db
+
+    @classmethod
+    def get(cls: Type[_Cls], *query: Any, **filters: Any) -> _Cls:
+        return super().get(*query, **filters)  # type: ignore
 
 
 class Bangumi(NeoDB):

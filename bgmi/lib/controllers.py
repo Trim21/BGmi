@@ -299,7 +299,7 @@ def mark(name: str, episode: int) -> ControllerResult:
         followed_obj = Followed.get(bangumi_name=name)
     except Followed.DoesNotExist:
         runner = ScriptRunner()
-        followed_obj = runner.get_model(name)
+        followed_obj = runner.get_model(name)  # type: ignore
         if not followed_obj:
             result["status"] = "error"
             result["message"] = "Subscribe or Script <{}> does not exist.".format(name)
