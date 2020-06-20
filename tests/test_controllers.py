@@ -69,11 +69,11 @@ class ControllersTest(unittest.TestCase):
         add(self.bangumi_name_1, 0)
 
         r = mark(self.bangumi_name_1, 1)
-        self.assertEqual(r["status"], "success", r["message"])
+        self.assertEqual(r.status, "success", r.message)
         r = mark(self.bangumi_name_1, None)
-        self.assertEqual(r["status"], "info", r["message"])
+        self.assertEqual(r.status, "success", r.message)
         r = mark(self.bangumi_name_2, 0)
-        self.assertEqual(r["status"], "error", r["message"])
+        self.assertEqual(r.status, "error", r.message)
 
     def test_d_delete(self):
         r = delete()

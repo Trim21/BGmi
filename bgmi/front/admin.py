@@ -57,7 +57,7 @@ API_MAP_POST = {
     ACTION_CONFIG: config,
     ACTION_DOWNLOAD: download_prepare,
     ACTION_AUTH: auth_,
-    ACTION_MARK: mark,
+    ACTION_MARK: wrap_attr(mark),
     ACTION_STATUS: status_,
     ACTION_FILTER: wrap_attr(filter_),
 }  # type: Dict[str, Callable]

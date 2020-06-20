@@ -286,32 +286,26 @@ def download(name: str, title: str, episode: int, download_url: str) -> None:
     )
 
 
-def mark(name: str, episode: int) -> ControllerResult:
+def mark(name: str, episode: Optional[int]) -> Result:
     """
 
     :param name: name of the bangumi you want to mark
     :param episode: bangumi episode you want to mark
     """
-    result = {}
     try:
         followed_obj = Followed.get(bangumi_name=name)
     except Followed.DoesNotExist:
         runner = ScriptRunner()
         followed_obj = runner.get_model(name)  # type: ignore
         if not followed_obj:
-            result["status"] = "error"
-            result["message"] = "Subscribe or Script <{}> does not exist.".format(name)
-            return result
+            return Result.error("Subscribe or Script <{}> does not exist.".format(name))
 
     if episode is not None:
         followed_obj.episode = episode
         followed_obj.save()
-        result["status"] = "success"
-        result["message"] = "{} has been mark as episode: {}".format(name, episode)
+        return Result.success("{} has been mark as episode: {}".format(name, episode))
     else:  # episode is None
-        result["status"] = "info"
-        result["message"] = "{}, episode: {}".format(name, followed_obj.episode)
-    return result
+        return Result.success("{}, episode: {}".format(name, followed_obj.episode))
 
 
 def search(

@@ -104,7 +104,7 @@ def search_wrapper(ret: Any) -> None:
 
 def mark_wrapper(ret: Any) -> None:
     result = mark(name=ret.name, episode=ret.episode)
-    globals()["print_{}".format(result["status"])](result["message"])
+    result.print()
 
 
 def delete_wrapper(ret: Any) -> None:
