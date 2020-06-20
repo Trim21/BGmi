@@ -4,6 +4,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from threading import Lock
 from typing import Any, Callable, Dict
 
+import attr
 from tornado.concurrent import run_on_executor
 from tornado.ioloop import IOLoop
 from tornado.web import HTTPError, RequestHandler
@@ -41,8 +42,15 @@ def auth_(token: str = "") -> Dict[str, str]:
     return {"status": "success" if token == ADMIN_TOKEN else "error"}
 
 
+def wrap_attr(f: Callable) -> Callable:
+    def wrapped(*args: Any, **kwargs: Any) -> dict:
+        return attr.asdict(f(*args, **kwargs))
+
+    return wrapped
+
+
 API_MAP_POST = {
-    ACTION_ADD: add,
+    ACTION_ADD: wrap_attr(add),
     ACTION_DELETE: delete,
     ACTION_SEARCH: search,
     ACTION_CONFIG: config,
@@ -50,7 +58,7 @@ API_MAP_POST = {
     ACTION_AUTH: auth_,
     ACTION_MARK: mark,
     ACTION_STATUS: status_,
-    ACTION_FILTER: filter_,
+    ACTION_FILTER: wrap_attr(filter_),
 }  # type: Dict[str, Callable]
 
 API_MAP_GET = {

@@ -119,7 +119,7 @@ def delete_wrapper(ret: Any) -> None:
 def add_wrapper(ret: Any) -> None:
     for bangumi_name in ret.name:
         result = add(name=bangumi_name, episode=ret.episode)
-        globals()["print_{}".format(result["status"])](result["message"])
+        result.print()
 
 
 def list_wrapper(*args: Any) -> None:
@@ -231,13 +231,11 @@ def filter_wrapper(ret: Any) -> None:
         exclude=ret.exclude,
         regex=ret.regex,
     )
-    if "data" not in result:
-        globals()["print_{}".format(result["status"])](result["message"])
+    if result.data:
+        result.print()
     else:
         print_info(
-            "Usable subtitle group: {}".format(
-                ", ".join(result["data"]["subtitle_group"])
-            )
+            "Usable subtitle group: {}".format(", ".join(result.data["subtitle_group"]))
         )
         followed_filter_obj = Filter.get(bangumi_name=ret.name)
         print_filter(followed_filter_obj)

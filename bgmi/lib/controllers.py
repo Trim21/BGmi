@@ -4,6 +4,8 @@ import time
 from operator import itemgetter
 from typing import Any, Dict, List, Optional, Union
 
+import attr
+
 from bgmi.config import MAX_PAGE, write_config
 from bgmi.lib.constants import BANGUMI_UPDATE_TIME, SUPPORT_WEBSITE
 from bgmi.lib.download import Episode, download_prepare
@@ -40,7 +42,40 @@ from bgmi.utils import (
 ControllerResult = Dict[str, Any]
 
 
-def add(name: str, episode: int = None) -> ControllerResult:
+@attr.s
+class Result:
+    message = attr.ib(default="", type=str)
+    status = attr.ib(
+        default="success",
+        type=str,
+        validator=attr.validators.in_(["success", "warning", "error"]),
+    )
+    data = attr.ib(default=None, type=Any)
+
+    def print(self) -> None:
+        if self.status == "success":
+            print_success(self.message)
+        elif self.status == "warning":
+            print_warning(self.message)
+        elif self.status == "error":
+            print_error(self.message)
+        else:
+            print(self.message)
+
+    @classmethod
+    def success(cls, message: str) -> "Result":
+        return cls(status="success", message=message)
+
+    @classmethod
+    def warning(cls, message: str) -> "Result":
+        return cls(status="warning", message=message)
+
+    @classmethod
+    def error(cls, message: str) -> "Result":
+        return cls(status="error", message=message)
+
+
+def add(name: str, episode: int = None) -> Result:
     """
     ret.name :str
     """
@@ -54,21 +89,13 @@ def add(name: str, episode: int = None) -> ControllerResult:
     try:
         bangumi_obj = Bangumi.fuzzy_get(name=name)
     except Bangumi.DoesNotExist:
-        result = {
-            "status": "error",
-            "message": "{} not found, please check the name".format(name),
-        }
-        return result
+        return Result.error("{} not found, please check the name".format(name))
     followed_obj, this_obj_created = Followed.get_or_create(
         bangumi_name=bangumi_obj.name, defaults={"status": STATUS_FOLLOWED}
     )
     if not this_obj_created:
         if followed_obj.status == STATUS_FOLLOWED:
-            result = {
-                "status": "warning",
-                "message": "{} already followed".format(bangumi_obj.name),
-            }
-            return result
+            return Result.warning("{} already followed".format(bangumi_obj.name))
         else:
             followed_obj.status = STATUS_FOLLOWED
             followed_obj.save()
@@ -86,10 +113,7 @@ def add(name: str, episode: int = None) -> ControllerResult:
         followed_obj.episode = max_episode if episode is None else episode
 
     followed_obj.save()
-    result = {
-        "status": "success",
-        "message": "{} has been followed".format(bangumi_obj.name),
-    }
+    result = Result.success("{} has been followed".format(bangumi_obj.name))
     logger.debug(result)
     return result
 
@@ -100,25 +124,23 @@ def filter_(
     include: Optional[str] = None,
     exclude: Optional[str] = None,
     regex: Optional[str] = None,
-) -> ControllerResult:
-    result = {"status": "success", "message": ""}  # type: Dict[str, Any]
+) -> Result:
+    result = Result()
     try:
         bangumi_obj = Bangumi.fuzzy_get(name=name)
     except Bangumi.DoesNotExist:
-        result["status"] = "error"
-        result["message"] = "Bangumi {} does not exist.".format(name)
+        result.status = "error"
+        result.message = "Bangumi {} does not exist.".format(name)
         return result
 
     try:
         Followed.get(bangumi_name=bangumi_obj.name)
-    except Followed.DoesNotExist as exc:
-        result["status"] = "error"
-        result[
-            "message"
-        ] = "Bangumi {name} has not subscribed, try 'bgmi add \"{name}\"'.".format(
-            name=bangumi_obj.name
+    except Followed.DoesNotExist:
+        return result.error(
+            "Bangumi {name} has not subscribed, try 'bgmi add \"{name}\"'.".format(
+                name=bangumi_obj.name
+            )
         )
-        return result
 
     followed_filter_obj, is_this_obj_created = Filter.get_or_create(bangumi_name=name)
 
@@ -151,7 +173,7 @@ def filter_(
         for s in Subtitle.get_subtitle_by_id(bangumi_obj.subtitle_group.split(", "))
     ]
 
-    result["data"] = {
+    result.data = {
         "name": name,
         "subtitle_group": subtitle_list,
         "followed": [
