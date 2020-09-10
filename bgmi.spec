@@ -7,7 +7,7 @@ datas = [("./bgmi.egg-info/*", "bgmi.egg-info")]
 
 a = Analysis(
     ["bgmi/__main__.py"],
-    hiddenimports=["bgmi", "transmissionrpc"],
+    hiddenimports=["bgmi"],
     hookspath=None,
     runtime_hooks=None,
     binaries=datas,
